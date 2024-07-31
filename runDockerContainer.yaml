@@ -1,0 +1,31 @@
+---
+- name: Install Docker and run a container
+  hosts: all
+  become: yes
+  gather_facts: false
+  connection: local
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker
+        state: present
+        update_cache: yes
+
+    - name: Start and enable Docker service
+      service:
+        name: docker
+        state: started
+        enabled: yes
+
+    - name: Pull Docker image from container registry
+      docker_image:
+        name: mayusharathod/java-app:v3
+        source: pull
+
+    - name: Run Docker container
+      docker_container:
+        name: javadocker-ansible
+        image: mayusharathod/java-app:v3
+        state: started
+        ports:
+          - "8089:8080"
