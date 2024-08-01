@@ -2,12 +2,30 @@
 - name: Install Docker and run a container
   hosts: all
   become: yes
-  gather_facts: false
-  connection: local
   tasks:
+    - name: Install dependencies
+      apt:
+        name: 
+          - apt-transport-https
+          - ca-certificates
+          - curl
+          - software-properties-common
+        state: present
+        update_cache: yes
+
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg
+        state: present
+
+    - name: Add Docker repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu focal stable
+        state: present
+
     - name: Install Docker
       apt:
-        name: docker
+        name: docker-ce
         state: present
         update_cache: yes
 
@@ -24,7 +42,7 @@
 
     - name: Run Docker container
       docker_container:
-        name: javadocker-ansible
+        name: javadocker-ansible-m
         image: mayusharathod/java-app:v3
         state: started
         ports:
